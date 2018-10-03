@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Objects;
+
 /**
  * Created by LuoWen on 2015/10/27.
  * <p/>
@@ -137,8 +139,8 @@ public class UpdateManager {
      */
     private void compareVersions() {
         Version version = queue.get(0);
-        int versionCodeLocal = version.getLocal();
-        int versionCodeRemote = version.getRemote();
+        String versionCodeLocal = version.getLocal();
+        String versionCodeRemote = version.getRemote();
 
         boolean skipPromptDialog = false;
         try {
@@ -152,7 +154,8 @@ public class UpdateManager {
 
         //比对版本号
         //检查软件是否有更新版本
-        if (versionCodeLocal < versionCodeRemote) {
+        // if (versionCodeLocal < versionCodeRemote) {
+        if (!Objects.equals(versionCodeLocal, versionCodeRemote)) {
             if (isDownloading) {
                 msgBox.showDownloadDialog(null, null, null, !skipProgressDialog);
                 mHandler.sendEmptyMessage(Constants.VERSION_UPDATING);

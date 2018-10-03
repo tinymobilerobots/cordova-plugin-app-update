@@ -31,6 +31,7 @@ public class CheckUpdateThread implements Runnable {
     private List<Version> queue;
     private String packageName;
     private String updateXmlUrl;
+    private JSONObject options;
     private AuthenticationOptions authentication;
     private Handler mHandler;
 
@@ -47,19 +48,20 @@ public class CheckUpdateThread implements Runnable {
         this.queue = queue;
         this.packageName = packageName;
         this.updateXmlUrl = updateXmlUrl;
+        this.options = options;
         this.authentication = new AuthenticationOptions(options);
         this.mHandler = mHandler;
     }
 
     @Override
     public void run() {
-        int versionCodeLocal = getVersionCodeLocal(mContext); // 获取当前软件版本
-        int versionCodeRemote = getVersionCodeRemote();  //获取服务器当前软件版本
+        String versionCodeLocal = getVersionCodeLocal(); // 获取当前软件版本
+        String versionCodeRemote = getVersionCodeRemote();  //获取服务器当前软件版本
 
         queue.clear(); //ensure the queue is empty
         queue.add(new Version(versionCodeLocal, versionCodeRemote));
 
-        if (versionCodeLocal == 0 || versionCodeRemote == 0) {
+        if (versionCodeLocal == "" || versionCodeRemote == "") {
             mHandler.sendEmptyMessage(Constants.VERSION_RESOLVE_FAIL);
         } else {
             mHandler.sendEmptyMessage(Constants.VERSION_COMPARE_START);
@@ -115,16 +117,19 @@ public class CheckUpdateThread implements Runnable {
      * @param context
      * @return
      */
-    private int getVersionCodeLocal(Context context) {
+    // private int getVersionCodeLocal(Context context) {
+    private String getVersionCodeLocal() {
         LOG.d(TAG, "getVersionCode..");
 
-        int versionCode = 0;
+        String versionCode = "";
         try {
             // 获取软件版本号，对应AndroidManifest.xml下android:versionCode
-            versionCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
-        } catch (NameNotFoundException e) {
+            // versionCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
+            versionCode = options.getString("version");
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return versionCode;
     }
 
@@ -133,8 +138,8 @@ public class CheckUpdateThread implements Runnable {
      *
      * @return
      */
-    private int getVersionCodeRemote() {
-        int versionCodeRemote = 0;
+    private String getVersionCodeRemote() {
+        String versionCodeRemote = "";
 
         InputStream is = returnFileIS(updateXmlUrl);
         // 解析XML文件。 由于XML文件比较小，因此使用DOM方式进行解析
@@ -145,7 +150,7 @@ public class CheckUpdateThread implements Runnable {
             e.printStackTrace();
         }
         if (null != getMHashMap()) {
-            versionCodeRemote = Integer.valueOf(getMHashMap().get("version"));
+            versionCodeRemote = getMHashMap().get("name");
         }
 
         return versionCodeRemote;
