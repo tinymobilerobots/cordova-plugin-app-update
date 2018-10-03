@@ -86,7 +86,8 @@ public class DownloadApkThread implements Runnable {
                 if (!file.exists()) {
                     file.mkdir();
                 }
-                File apkFile = new File(mSavePath, mHashMap.get("name")+".apk");
+                // File apkFile = new File(mSavePath, mHashMap.get("name")+".apk");
+                File apkFile = new File(mSavePath, "tmr.apk");
                 FileOutputStream fos = new FileOutputStream(apkFile);
                 int count = 0;
                 // 缓存
