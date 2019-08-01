@@ -2,7 +2,7 @@
 <resources>
     <string name="update_latest">Now you have the latest update</string>
     <string name="update_title">New update</string>
-    <string name="update_message">The software need to be updated！</string>
+    <string name="update_message">A new version of the app is available</string>
     <string name="update_update_btn">Update</string>
     <string name="updating">Updating</string>
     <string name="update_cancel">Cancel</string>
